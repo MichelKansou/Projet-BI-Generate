@@ -1,0 +1,56 @@
+{
+  "name": "bi-project-generate-data",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/electron/electron-quick-start.git"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial"
+  ],
+  "author": "Michel Kansou",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/electron/electron-quick-start/issues"
+  },
+  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "devDependencies": {
+    "assets-webpack-plugin": "*",
+    "babel-core": "^6.10.4",
+    "babel-loader": "*",
+    "babel-plugin-webpack-loaders": "*",
+    "cross-env": "*",
+    "electron-prebuilt": "^1.2.0",
+    "extract-text-webpack-plugin": "*",
+    "jsx-loader": "*"
+  },
+  "dependencies": {
+    "babel": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-react": "*",
+    "browserify": "^13.0.1",
+    "classnames": "*",
+    "immutable": "*",
+    "jquery": "*",
+    "json-loader": "*",
+    "jsonfile": "*",
+    "jstransform": "*",
+    "mysql": "^2.11.1",
+    "react": "*",
+    "react-addons-update": "*",
+    "react-deep-force-update": "*",
+    "react-hot-loader": "*",
+    "react-mixin": "*",
+    "react-pager": "*",
+    "react-pure-render": "*",
+    "react-router": "*"
+  }
+}
