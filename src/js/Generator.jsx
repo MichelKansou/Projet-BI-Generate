@@ -8,8 +8,17 @@ var Generator = React.createClass({
              handleDate: '',
              generatedDate: '',
              generatedProduct: '',
-             generatedQuantity: ''
+             generatedQuantity: '',
+             commandNumber: 0
         };
+    },
+
+    generator(commandNumber, event){
+        let startDate = this.state.handleDate.startDate;
+        let endDate = this.state.handleDate.endDate;
+        for (var i=0; i < commandNumber; i++) {
+            this.randomDate(startDate, endDate);
+        }
     },
 
     handleSelect(handleSelect){
@@ -31,27 +40,45 @@ var Generator = React.createClass({
             generatedQuantity: Quantity
         });
     },
+    handleChange(event){
+        this.setState({commandNumber: event.target.value});
+    },
 
     render() {
         let result = this.props.queryResult;
-        let startDate = this.state.handleDate.startDate;
-        let endDate = this.state.handleDate.endDate;
 
-        if ( result != null ){
-          var dataList = this.state.table.map((rows, index) =>
-            <li key={index}>table : {rows.ProductName}</li>
-          )
-        }
         return (
             <div className="generator-container">
-                <h1> Generator BI </h1>
-                <button className="ui blue button" onClick={this.randomDate.bind(this, startDate, endDate)} >
-                    Valider
-                </button>
-                <DateRange
-                   onInit={this.handleSelect}
-                   onChange={this.handleSelect}
-               />
+                <div className="title">
+                    <h1> Data Generator </h1>
+                </div>
+                <div className="ui form custom">
+                    <div className="field custom">
+                        <label>Number of order</label>
+                        <input  type="text"
+                                name="order-number"
+                                value={this.state.commandNumber}
+                                onChange={this.handleChange}
+                                placeholder="00"/>
+                    </div>
+                    <button className="ui blue button"
+                        onClick={this.generator.bind(this, this.state.commandNumber)}>Submit</button>
+                </div>
+                <div className="Datepicker">
+                    <DateRange
+                       onInit={this.handleSelect}
+                       onChange={this.handleSelect}
+                       theme={{
+                                DateRange      : {
+                                  background   : 'transparent'
+                                },
+                               Calendar       : {
+                                 background   : '#3B3C3D',
+                                 color        : '#ECF0F1',
+                               }
+                          }}
+                   />
+                </div>
             </div>
         );
       }

@@ -1,0 +1,20 @@
+#app{
+    background-color: #F0F1F5;
+    height: 100%;
+}
+
+.title{
+    text-align: center;
+}
+.ui.form.custom{
+    max-width: 15%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+.Datepicker{
+    padding: 10px 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 580px;
+}
