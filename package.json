@@ -53,11 +53,13 @@
     "mysql": "^2.11.1",
     "react": "*",
     "react-addons-update": "*",
+    "react-date-range": "^0.2.4",
     "react-deep-force-update": "*",
     "react-hot-loader": "*",
     "react-mixin": "*",
     "react-pager": "*",
     "react-pure-render": "*",
-    "react-router": "*"
+    "react-router": "*",
+    "semantic-ui": "^2.2.1"
   }
 }
