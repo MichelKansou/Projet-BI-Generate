@@ -4,6 +4,11 @@
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
+    "webpack-prod": "cross-env webpack --config webpack.config.js --progress ",
+    "webpack-watch-dev": "cross-env webpack --config webpack.dev.config.js --progress -w -d --hot --inline",
+    "start-prod": "NODE_ENV=production npm run webpack-prod && electron main.js",
+    "start-dev": "NODE_ENV=development electron main.js & npm run webpack-watch-dev",
+    "watch": "npm run electron main.js && npm run webpack-prod",
     "start": "electron ."
   },
   "repository": {
@@ -30,7 +35,9 @@
     "cross-env": "*",
     "electron-prebuilt": "^1.2.0",
     "extract-text-webpack-plugin": "*",
-    "jsx-loader": "*"
+    "jsx-loader": "*",
+    "webpack": "^1.13.1",
+    "webpack-target-electron-renderer": "^0.4.0"
   },
   "dependencies": {
     "babel": "*",

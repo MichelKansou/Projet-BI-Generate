@@ -100,5 +100,6 @@ jspm_packages
 .sass-cache/
 *.css.map
 
-### dist folder ###
+### build & dist folder ###
+build/
 dist/
