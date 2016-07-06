@@ -1,6 +1,14 @@
 import React from 'react'
 import { DateRange } from 'react-date-range'
 
+// Connection BDD mysql
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'root',
+  database : 'plasticbox'
+});
+
 var Generator = React.createClass({
     propTypes: {
         connectToDB: React.PropTypes.func,
@@ -18,78 +26,80 @@ var Generator = React.createClass({
         };
     },
 
+    // main(commandNumber, MaxProduct, MaxQuantity, event){
+    //     this.generator(commandNumber, MaxProduct, MaxQuantity, event, function(){
+    //         //this.Compute_Order_Price();
+    //     }.bind(this));
+    // },
     generator(commandNumber, MaxProduct, MaxQuantity, event){
         const {connectToDB, insertToDB} = this.props;
         // Generate Date
+        let startDate = this.state.handleDate.startDate;
+        let endDate = this.state.handleDate.endDate;
             // Select Product Table
         connectToDB('SELECT * FROM plasticbox.products;', function(Product_Table){
-            //console.log(Product_Table);
+            console.log(Product_Table);
             // Select Client Table
             connectToDB('SELECT * FROM plasticbox.customers;', function(Client_Table){
-                let startDate = this.state.handleDate.startDate;
-                let endDate = this.state.handleDate.endDate;
-                var
-                    Preparation_Date, Delivery_Date, Order_Date, Client_ID, Product_Number, i, j;
-                var Product_ID, Product_Quantity, TotalPrice;
-                var CommandProduct = [];
-                var Order = [];
-                for (i=1; i < commandNumber; i++) {
+                console.log(Client_Table);
+                for (var i=0; i < commandNumber; i++) {
                     this.randomDate(startDate, endDate);
-                    Client_ID = Math.floor(Math.random() * 11) + 1;
-                    Product_Number =  Math.floor(Math.random() * MaxProduct) + 1;
-                    Order_Date = this.state.generatedDate;
-                        for (j=0; j < Product_Number; j++) {
-                            Product_ID = Math.floor(Math.random() * 15) + 1;
-                            Product_Quantity = Math.floor(Math.random() * MaxQuantity) + 1;
-                            TotalPrice  = Product_Table[Product_ID-1].PriceProduct * Product_Quantity;
-                            CommandProduct.push([i, Product_ID, Product_Quantity, TotalPrice]);
+                    var
+                        Preparation_Date, Delivery_Date,
+                        Order_Date = this.state.generatedDate,
+                        Client_ID = Math.floor(Math.random() * Client_Table.length) + 1,
+                        Product_Number =  Math.floor(Math.random() * MaxProduct) + 1;
+                    connectToDB('SELECT * FROM plasticbox.orders;', function(Order_Table){
+                        var Order_ID = Order_Table.length + 1;
+                        for (var i=0; i < Product_Number; i++) {
+                            var Product_ID = Math.floor(Math.random() * Product_Table.length) + 1;
+                            var Product_Quantity = Math.floor(Math.random() * MaxQuantity) + 1;
+                            // console.log('Product_ID',Product_ID);
+                            // console.log('Product_Quantity : ',Product_Quantity);
+
+                            connectToDB('SELECT PriceProduct FROM plasticbox.products WHERE RefProduct = ' + Product_ID +';', function(Product_Price){
+                                let TotalPrice  = Product_Price[0].PriceProduct * Product_Quantity;
+                                let InsertQuery = { RefOrder: Order_ID,
+                                                RefProduct: Product_ID,
+                                                QuantityProduct: Product_Quantity,
+                                                ProductPrice: TotalPrice
+                                            };
+                            insertToDB('INSERT INTO plasticbox.commandsproduct SET ? ', InsertQuery);
+                            //console.log(TotalPrice);
+                            }.bind(this));
                         }
-                        Order.push([Client_ID, Order_Date]);
-                }
-                for (var i = 0; i < CommandProduct.length; i++) {
-                    //console.log(CommandProduct[i][0]);
-                    let InsertQuery = {
-                                    RefOrder: CommandProduct[i][0],
-                                    RefProduct: CommandProduct[i][1],
-                                    QuantityProduct: CommandProduct[i][2],
-                                    ProductPrice: CommandProduct[i][3]
-                                };
-                    insertToDB('INSERT INTO plasticbox.commandsproduct SET ? ', InsertQuery);
-                }
-                for (var i = 0; i < Order.length; i++) {
-                    let InsertQuery = { RefCustomer: Order[i][0],
-                                        OrderDate: Order[i][1],
+                    }.bind(this));
+                    let InsertQuery = { RefCustomer: Client_ID,
+                                        OrderDate: Order_Date,
                                         PreparationDate: '2016-09-21 3:13',
                                         DeliveryDate: '2016-09-21 3:13',
                                     };
                     insertToDB('INSERT INTO plasticbox.orders SET ? ', InsertQuery);
                 }
-                // console.log(Order);
-                // console.log(CommandProduct);
             }.bind(this));
         }.bind(this));
     },
 
-    // Compute_Order_Price() {
-    //     const {connectToDB, insertToDB} = this.props;
-    //     // Select Product Table
-    //     console.log('inside Compute_Order_Price');
-    //     connectToDB('SELECT RefOrder FROM plasticbox.orders WHERE PublicPrice IS NULL;', function(Order_ID){
-    //         for (var i=0; i < Order_ID.length; i++) {
-    //             //console.log(Order_ID[i].RefOrder);
-    //             let ID = Order_ID[i].RefOrder;
-    //             connectToDB('SELECT ProductPrice FROM plasticbox.commandsproduct WHERE RefOrder ='+ID+';', function(Product_Price){
-    //                 console.log(Product_Price);
-    //                 var Order_Price = 0;
-    //                 for (var i=0; i < Product_Price.length; i++) {
-    //                     Order_Price = Order_Price + parseInt(Product_Price[i].ProductPrice);
-    //                 }
-    //                 let InsertQuery = { PublicPrice: Order_Price };
-    //                 insertToDB('UPDATE plasticbox.orders SET ? WHERE RefOrder ='+ID, InsertQuery);
-    //             }.bind(this));
-    //         }
-    //     }.bind(this));
-    // },
+    Compute_Order_Price() {
+        const {connectToDB, insertToDB} = this.props;
+        // Select Product Table
+        console.log('inside Compute_Order_Price');
+        connectToDB('SELECT RefOrder FROM plasticbox.orders WHERE PublicPrice IS NULL;', function(Order_ID){
+            for (var i=0; i < Order_ID.length; i++) {
+                //console.log(Order_ID[i].RefOrder);
+                let ID = Order_ID[i].RefOrder;
+                connectToDB('SELECT ProductPrice FROM plasticbox.commandsproduct WHERE RefOrder ='+ID+';', function(Product_Price){
+                    console.log(Product_Price);
+                    var Order_Price = 0;
+                    for (var i=0; i < Product_Price.length; i++) {
+                        Order_Price = Order_Price + parseInt(Product_Price[i].ProductPrice);
+                    }
+                    let InsertQuery = { PublicPrice: Order_Price };
+                    insertToDB('UPDATE plasticbox.orders SET ? WHERE RefOrder ='+ID, InsertQuery);
+                }.bind(this));
+            }
+        }.bind(this));
+    },
 
     handleSelect(handleSelect){
         this.setState({handleDate: handleSelect});

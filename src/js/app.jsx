@@ -11,35 +11,36 @@ var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
   password : 'root',
-  database : 'mydb'
+  database : 'plasticbox'
 });
 
 
 var App = React.createClass({
 
-    //Initialisation des variables
-    getInitialState: function() {
-        return {queryResult: null};
-    },
+
 
     // Fonction lancer des requete à mysql
-    connectToDB: function(query){
-        connection.connect();
-
+    connectToDB(query, callback){
         connection.query( query, function(err, rows, fields) {
-        if (err) throw err;
-        console.log('Your Query contains: ', rows[0]);
-        this.setState({queryResult: rows});
-        }.bind(this));
+        if (err) {
+            return callback(err);
+        }
+        callback(rows);
+        //console.log('Your Query contains: ', rows);
+        });
+    },
 
-        connection.end();
+    insertToDB(query, post){
+        var query = connection.query(query, post, function(err, result) {
+        });
+        console.log(query.sql);
     },
 
     //Affichage des composants
-    render: function() {
+    render() {
         return (
             <div className="app-container">
-                <Generator queryResult={this.state.queryResult}/>
+                <Generator connectToDB={this.connectToDB} insertToDB={this.insertToDB} />
             </div>
         );
     }
